@@ -1,0 +1,28 @@
+# Node and composer dependencies
+node_modules
+backend/vendor
+
+# Build outputs
+dist
+build
+
+# Git and system files
+.git
+.gitignore
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+backend/.env
+backend/.env.*
+
+# Logs and temporary files
+*.log
+*.err
+*.tmp
+
+# Laravel runtime directories
+backend/storage
+backend/bootstrap/cache

@@ -5,8 +5,10 @@ backend/vendor/
 # Environment variables
 .env
 .env.*
+!.env.example
 backend/.env
 backend/.env.*
+!backend/.env.example
 
 # Laravel specific
 backend/storage/logs
