@@ -23,7 +23,7 @@ services:
         sync: false
       - key: DB_CONNECTION
         value: pgsql
-      - key: DB_URL
+      - key: DATABASE_URL
         sync: false
       - key: FILESYSTEM_DISK
         value: public
