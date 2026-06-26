@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,17 +12,42 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('pin');
-            $table->boolean('notifications_enabled')->default(true);
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            $this->runSqlStep(
+                'create users table',
+                <<<SQL
+                CREATE TABLE "users" (
+                    "id" BIGSERIAL NOT NULL PRIMARY KEY,
+                    "name" VARCHAR(255) NOT NULL,
+                    "email" VARCHAR(255) NOT NULL,
+                    "email_verified_at" TIMESTAMP(0) WITHOUT TIME ZONE NULL,
+                    "password" VARCHAR(255) NOT NULL,
+                    "pin" VARCHAR(255) NOT NULL,
+                    "notifications_enabled" BOOLEAN NOT NULL DEFAULT TRUE,
+                    "remember_token" VARCHAR(100) NULL,
+                    "created_at" TIMESTAMP(0) WITHOUT TIME ZONE NULL,
+                    "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NULL
+                )
+                SQL
+            );
+
+            $this->runSqlStep(
+                'add users email unique',
+                'ALTER TABLE "users" ADD CONSTRAINT "users_email_unique" UNIQUE ("email")'
+            );
+        } else {
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->string('pin');
+                $table->boolean('notifications_enabled')->default(true);
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -47,5 +73,26 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+    }
+
+    private function runSqlStep(string $step, string $sql): void
+    {
+        fwrite(STDERR, "[migration] {$step}\n");
+
+        try {
+            DB::statement($sql);
+        } catch (\Throwable $exception) {
+            $pdoException = $exception->getPrevious();
+
+            if ($pdoException instanceof \PDOException) {
+                $sqlState = $pdoException->errorInfo[0] ?? $pdoException->getCode();
+                $message = $pdoException->errorInfo[2] ?? $pdoException->getMessage();
+                fwrite(STDERR, "[pdo-error] sqlstate={$sqlState} | message={$message}\n");
+            } else {
+                fwrite(STDERR, "[error] {$exception->getMessage()}\n");
+            }
+
+            throw $exception;
+        }
     }
 };
