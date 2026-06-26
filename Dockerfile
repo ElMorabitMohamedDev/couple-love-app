@@ -15,7 +15,13 @@ RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-interacti
 # Copy the Laravel application
 COPY backend/ ./
 
-RUN mkdir -p storage bootstrap/cache \
+RUN mkdir -p storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    storage/app/public \
+    storage/app/private \
+    bootstrap/cache \
     && chmod -R ug+rwX storage bootstrap/cache
 
 RUN composer dump-autoload --optimize --no-interaction --no-scripts \
