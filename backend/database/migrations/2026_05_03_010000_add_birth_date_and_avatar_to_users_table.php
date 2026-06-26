@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->date('birth_date')->nullable()->after('email_verified_at');
-            $table->string('avatar_disk')->nullable()->after('birth_date');
-            $table->string('avatar_path')->nullable()->after('avatar_disk');
+            $table->date('birth_date')->nullable();
+            $table->string('avatar_disk')->nullable();
+            $table->string('avatar_path')->nullable();
         });
     }
 

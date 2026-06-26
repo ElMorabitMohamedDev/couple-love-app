@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('relationships', function (Blueprint $table) {
-            $table->json('children')->nullable()->after('future_children_slots');
+            $table->json('children')->nullable();
         });
     }
 
