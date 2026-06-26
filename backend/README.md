@@ -6,11 +6,11 @@ Laravel REST API for the mobile-first couple web app in this repository.
 
 - Laravel `12.58.0`
 - PHP `8.2+`
-- MySQL for production
+- PostgreSQL, MySQL, MariaDB, or SQLite
 - Sanctum token auth
 - Laravel storage for image/video uploads
 
-Laravel 13 is the latest major series as of May 2, 2026, but it now requires PHP 8.3. This backend was built on Laravel 12 because the current environment is PHP 8.2.12. The code is structured so upgrading to Laravel 13 later should be straightforward after a PHP upgrade.
+This backend stays on Laravel 12 because the current environment runs PHP 8.2.12. It is ready for a free Render deployment with a PostgreSQL database URL and can still be upgraded later once the runtime moves to PHP 8.3+.
 
 ## Frontend Features Covered
 
@@ -163,12 +163,25 @@ Content-Type: application/json
 ## Local Run
 
 1. Copy `.env.example` to `.env`.
-2. Configure MySQL credentials in `.env`.
+2. Configure your database credentials in `.env`.
 3. Run `composer install`.
 4. Run `php artisan key:generate`.
 5. Run `php artisan migrate --seed`.
 6. Run `php artisan storage:link`.
 7. Start the API with `php artisan serve`.
+
+## Render Deploy
+
+Use the root `render.yaml` file to deploy the API as a Docker web service.
+
+Required values during setup:
+
+- `APP_KEY`
+- `APP_URL`
+- `FRONTEND_URL`
+- `DB_URL`
+
+The container entrypoint now listens on Render's `PORT` variable and the root health route no longer uses a closure, so route caching is safe in production.
 
 Default seeded users:
 
@@ -180,25 +193,7 @@ Change these in `.env` before running `php artisan migrate --seed` in any real e
 
 ## Deployment Notes
 
-Render or Railway:
-
-1. Provision a MySQL database.
-2. Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL`, `FRONTEND_URL`, and the MySQL env vars.
-3. Set `FILESYSTEM_DISK=public` unless you are switching to S3-compatible storage.
-4. Run `php artisan migrate --force --seed`.
-5. Run `php artisan storage:link`.
-6. Run `php artisan config:cache`, `php artisan route:cache`, and `php artisan optimize`.
-
-Suggested PHP build/runtime requirements:
-
-- PHP `8.2+` for this Laravel 12 backend
-- `pdo_mysql`
-- `mbstring`
-- `openssl`
-- `fileinfo`
-
-## Verification
-
-- `php artisan migrate:fresh --seed`
-- `php artisan route:list --path=api`
-- `php artisan test`
+- The root `render.yaml` is the supported production blueprint.
+- Use a PostgreSQL `DB_URL` for the free deployment path.
+- Run `php artisan migrate --force` for production data, and keep `--seed` for local demo data only.
+- Upload storage still uses the backend filesystem, so add persistent storage or an external bucket if you need media to survive restarts.

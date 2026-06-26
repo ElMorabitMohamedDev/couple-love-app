@@ -1,10 +1,13 @@
 # Node and composer dependencies
 node_modules
+frontend/node_modules
 backend/vendor
 
 # Build outputs
 dist
 build
+frontend/dist
+frontend/.vite
 
 # Git and system files
 .git
@@ -15,6 +18,8 @@ Thumbs.db
 # Environment files
 .env
 .env.*
+frontend/.env
+frontend/.env.*
 backend/.env
 backend/.env.*
 

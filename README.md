@@ -1,63 +1,81 @@
 # Mobile Romantic Couple App
 
-This repository now contains:
+Project split into:
 
-- `src/`: the mobile-first React frontend
-- `backend/`: the Laravel API backend
+- `frontend/`: React + Vite frontend
+- `backend/`: Laravel API
 
-## What Was Cleaned Up
+## Tech Stack
 
-- Removed unused Figma export scaffolding
-- Removed unused generated `ui/` components
-- Removed unused frontend styles and config leftovers
-- Reorganized the frontend into `pages`, `components`, `context`, and `lib`
-- Connected the main frontend screens to the Laravel API
+- Frontend: React 18, Vite, TypeScript, Tailwind CSS, Motion, Lucide
+- Backend: Laravel 12, PHP 8.2, Sanctum, database-backed API
+- Supported databases: PostgreSQL, MySQL, MariaDB, SQLite
 
-## Frontend
+## Local Run
 
-The frontend is mobile-first and expects the Laravel API to run locally at:
-
-```env
-VITE_API_URL=http://127.0.0.1:8000/api
-```
-
-Create a `.env` from `.env.example` if you want to override the default.
-
-Install and run:
+Frontend:
 
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Build:
+For local development, start the backend too:
 
 ```bash
-npm run build
+cd backend
+php artisan serve
 ```
 
-## Backend
+The frontend will call `/api`, and Vite will proxy that to `http://127.0.0.1:8000`.
 
-Backend setup and deployment instructions are in [backend/README.md](backend/README.md).
-
-Typical local flow:
+Backend:
 
 ```bash
 cd backend
 composer install
+php artisan key:generate
 php artisan migrate --seed
-php artisan storage:link
 php artisan serve
 ```
 
-## Local App Flow
+## Free Deployment Recommendation
 
-1. Start Laravel on `http://127.0.0.1:8000`
-2. Start Vite on `http://127.0.0.1:5173`
-3. Log in by selecting one of the two seeded names and using the shared password from `backend/.env`
+- Frontend: Netlify
+- Backend: Render Docker web service
+- Database: a free PostgreSQL provider such as Neon or Supabase
 
-Default local seeded users:
+This split keeps the frontend static and cheap to host, while the Laravel API runs in a normal PHP container.
 
-- `AyaTii`
-- `Partner`
-- Shared password: `together123`
+## Required Environment Variables
+
+Frontend:
+
+```env
+VITE_API_URL=https://your-backend.example.com/api
+```
+
+Backend:
+
+```env
+APP_URL=https://your-backend.example.com
+FRONTEND_URL=https://your-frontend.example.com
+DB_URL=postgresql://...
+APP_KEY=base64:...
+```
+
+## Deploy Steps
+
+1. Create a free PostgreSQL database.
+2. Deploy the backend using `render.yaml`.
+3. Set `APP_KEY`, `APP_URL`, `FRONTEND_URL`, and `DB_URL` in Render.
+4. Deploy the frontend on Netlify with `netlify.toml`.
+5. Set `VITE_API_URL` in Netlify to the Render backend URL.
+6. Open the backend URL and confirm the health JSON response.
+
+## Notes
+
+- The backend exposes a cacheable health route at `/`.
+- SPA navigation is handled by the Netlify redirect rule in `netlify.toml`.
+- Upload storage still depends on the backend host's filesystem. For long-term media persistence on a free tier, use a persistent disk or external object storage.

@@ -1,11 +1,15 @@
 # Dependencies
 node_modules/
+frontend/node_modules/
 backend/vendor/
 
 # Environment variables
 .env
 .env.*
 !.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 backend/.env
 backend/.env.*
 !backend/.env.example
@@ -20,6 +24,8 @@ backend/bootstrap/cache
 # Build outputs
 dist/
 build/
+frontend/dist/
+frontend/.vite/
 
 # Logs
 *.log
