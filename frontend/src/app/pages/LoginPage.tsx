@@ -15,6 +15,8 @@ export function LoginPage() {
   const [setupForm, setSetupForm] = useState({
     partner_one_name: "",
     partner_two_name: "",
+    partner_one_email: "",
+    partner_two_email: "",
     password: "",
     password_confirmation: "",
   });
@@ -152,6 +154,20 @@ export function LoginPage() {
                   value={setupForm.partner_one_name}
                   onChange={(event) => setSetupForm((current) => ({ ...current, partner_one_name: event.target.value }))}
                   placeholder="First name"
+                  required
+                  className="w-full rounded-2xl border-2 border-rose-100 bg-rose-50/50 px-4 py-3 text-gray-800 outline-none focus:border-rose-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm text-gray-600">Partner one email</label>
+                <input
+                  type="email"
+                  value={setupForm.partner_one_email}
+                  onChange={(event) => setSetupForm((current) => ({ ...current, partner_one_email: event.target.value }))}
+                  placeholder="partner.one@example.com"
+                  required
+                  autoComplete="email"
                   className="w-full rounded-2xl border-2 border-rose-100 bg-rose-50/50 px-4 py-3 text-gray-800 outline-none focus:border-rose-400"
                 />
               </div>
@@ -162,6 +178,20 @@ export function LoginPage() {
                   value={setupForm.partner_two_name}
                   onChange={(event) => setSetupForm((current) => ({ ...current, partner_two_name: event.target.value }))}
                   placeholder="Second name"
+                  required
+                  className="w-full rounded-2xl border-2 border-rose-100 bg-rose-50/50 px-4 py-3 text-gray-800 outline-none focus:border-rose-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm text-gray-600">Partner two email</label>
+                <input
+                  type="email"
+                  value={setupForm.partner_two_email}
+                  onChange={(event) => setSetupForm((current) => ({ ...current, partner_two_email: event.target.value }))}
+                  placeholder="partner.two@example.com"
+                  required
+                  autoComplete="email"
                   className="w-full rounded-2xl border-2 border-rose-100 bg-rose-50/50 px-4 py-3 text-gray-800 outline-none focus:border-rose-400"
                 />
               </div>
@@ -173,6 +203,7 @@ export function LoginPage() {
                   value={setupForm.password}
                   onChange={(event) => setSetupForm((current) => ({ ...current, password: event.target.value }))}
                   placeholder="At least 6 characters"
+                  required
                   className="w-full rounded-2xl border-2 border-rose-100 bg-rose-50/50 px-4 py-3 text-gray-800 outline-none focus:border-rose-400"
                 />
               </div>
@@ -184,6 +215,7 @@ export function LoginPage() {
                   value={setupForm.password_confirmation}
                   onChange={(event) => setSetupForm((current) => ({ ...current, password_confirmation: event.target.value }))}
                   placeholder="Repeat the password"
+                  required
                   className="w-full rounded-2xl border-2 border-rose-100 bg-rose-50/50 px-4 py-3 text-gray-800 outline-none focus:border-rose-400"
                 />
               </div>
