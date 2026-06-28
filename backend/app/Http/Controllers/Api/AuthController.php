@@ -25,11 +25,10 @@ class AuthController extends Controller
 
     public function setup(Request $request): JsonResponse
     {
+        dd($request->all());
         $validated = $request->validate([
             'partner_one_name' => ['required', 'string', 'max:120', 'different:partner_two_name'],
             'partner_two_name' => ['required', 'string', 'max:120'],
-            'partner_one_email' => ['required', 'email', 'max:255'],
-            'partner_two_email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
@@ -43,14 +42,14 @@ class AuthController extends Controller
 
         DB::transaction(function () use ($existingUsers, $validated): void {
             $userOne = $existingUsers->get(0) ?? new User([
-                'email' => $validated['partner_one_email'],
+                'email' => env('USER_ONE_EMAIL', 'partner.one@example.com'),
             ]);
             $userTwo = $existingUsers->get(1) ?? new User([
-                'email' => $validated['partner_two_email'],
+                'email' => env('USER_TWO_EMAIL', 'partner.two@example.com'),
             ]);
 
-            $this->fillSharedUser($userOne, $validated['partner_one_name'], $validated['partner_one_email'], $validated['password'], true);
-            $this->fillSharedUser($userTwo, $validated['partner_two_name'], $validated['partner_two_email'], $validated['password'], true);
+            $this->fillSharedUser($userOne, $validated['partner_one_name'], $validated['password'], true);
+            $this->fillSharedUser($userTwo, $validated['partner_two_name'], $validated['password'], true);
 
             $relationship = $this->relationship() ?? new Relationship([
                 'title' => env('RELATIONSHIP_TITLE', 'Our Love Space'),
@@ -153,11 +152,11 @@ class AuthController extends Controller
         return Relationship::query()->with(['partnerOneUser', 'partnerTwoUser'])->oldest('id')->first();
     }
 
-    private function fillSharedUser(User $user, string $name, string $email, string $password, bool $notificationsEnabled): void
+    private function fillSharedUser(User $user, string $name, string $password, bool $notificationsEnabled): void
     {
         $user->forceFill([
             'name' => $name,
-            'email' => $email ?: ($user->email ?: Str::slug($name).'.'.Str::random(6).'@example.com'),
+            'email' => $user->email ?: Str::slug($name).'.'.Str::random(6).'@example.com',
             'password' => $password,
             'pin' => str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT),
             'notifications_enabled' => $notificationsEnabled,
