@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::transaction(function (): void {
+        // ⚠️  TEMPORARY DEBUG — replaced DB::transaction() to expose the real exception
+        try {
             $sharedPassword = env('SHARED_PASSWORD', 'together123');
 
             ReconciliationNudge::query()->delete();
@@ -194,6 +195,15 @@ class DatabaseSeeder extends Seeder
                 'message' => "I care about us. Let's talk when you're ready.",
                 'sent_at' => now()->subDay(),
             ]);
-        });
+
+        } catch (\Throwable $e) {
+            dd([
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => collect($e->getTrace())->take(10)->toArray(),
+            ]);
+        }
+        // ⚠️  END TEMPORARY DEBUG
     }
 }
